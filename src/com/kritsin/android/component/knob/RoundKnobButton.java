@@ -1,4 +1,4 @@
-package com.example.misctest;
+package com.kritsin.android.component.knob;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,92 +12,96 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.Shader.TileMode;
+import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
 
-/*
-File:              RoundKnobButton2
-Version:           1.0.0
-Release Date:      November, 2013
-License:           GPL v2
-Description:	   A round knob button to control volume and toggle between two states
+import com.kritsin.android.sample.knob.R;
+ 
 
-****************************************************************************
-Copyright (C) 2013 Radu Motisan  <radu.motisan@gmail.com>
+public class RoundKnobButton extends RelativeLayout implements OnGestureListener {
 
-http://www.pocketmagic.net
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-****************************************************************************/
-
-public class RoundKnobButton2 extends RelativeLayout implements OnGestureListener {
-
-	private GestureDetector 	gestureDetector;
-	private float 				mAngleDown , mAngleUp;
+	private GestureDetector gestureDetector;
+	private float mAngleDown , mAngleUp;
 	
-	private ImageView			ivRotor, ivCenter,ivProgress;
+	private ImageView ivRotor, ivCenter,ivProgress;
 	
-	private Bitmap 				bmpRotorOn , bmpRotorOff, bmpCenter;
+	private Bitmap bmpRotorOn , bmpRotorOff, bmpCenter;
 	
-	private boolean 			mState = false;
-	private int					m_nWidth = 0, m_nHeight = 0;
+	private boolean mState = false;
+	private int m_nWidth = 0, m_nHeight = 0;
 	
-	interface RoundKnobButton2Listener {
+	private RoundKnobButtonListener m_listener;
+	
+	private OnCenterClickListener mCenterClickListener;
+	
+	public interface RoundKnobButtonListener {
 		public void onStateChange(boolean newstate) ;
 		public void onRotate(int percentage);
 	}
 	
-	private RoundKnobButton2Listener m_listener;
+	public interface OnCenterClickListener  {
+		public void onCenterClick() ; 
+	}
 	
-	public void SetListener(RoundKnobButton2Listener l) {
+	public void setOnCenterClickListener(OnCenterClickListener l){
+		this.mCenterClickListener=l;
+	}
+	
+	public void setListener(RoundKnobButtonListener l) {
 		m_listener = l;
 	}
 	
-	public void SetState(boolean state) {
+	public void setState(boolean state) {
 		mState = state;
 		ivRotor.setImageBitmap(state?bmpRotorOn:bmpRotorOff);
 	}
 	
-	public RoundKnobButton2(Context context) {		
+	public RoundKnobButton(Context context) {		
 		super(context);
-		
-		final int w=250;
-		final int h=250;
-		// we won't wait for our size to be calculated, we'll just store out fixed size
+		init();		
+	}
+	
+	public RoundKnobButton(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	    init();
+	}
+
+	/*public RoundKnobButton(Context context, AttributeSet attrs, int defStyle) {
+		this(context); 
+//	    init(context);
+	}*/
+	
+	private void init(){
+		double density = getResources().getDisplayMetrics().density;
+		final int w=(int)(250*density);
+		final int h=(int)(250*density);
+		final int innerW=(int)(100*density);
+		final int innerH=(int)(100*density);
+ 
 		m_nWidth = w; 
 		m_nHeight = h;
-		// create stator
-		ImageView ivStator = new ImageView(context);
+ 
+		ImageView ivStator = new ImageView(getContext());
 		ivStator.setImageResource(R.drawable.back);
 		RelativeLayout.LayoutParams lp_ivStator = new RelativeLayout.LayoutParams(
 				w,h);
 		lp_ivStator.addRule(RelativeLayout.CENTER_IN_PARENT);
 		
-		ivProgress = new ImageView(context);
+		ivProgress = new ImageView(getContext());
 		ivProgress.setImageResource(R.drawable.statoroff);
 		
 		addView(ivStator, lp_ivStator);
 		addView(ivProgress, lp_ivStator);
-		// load rotor images
-		Bitmap srcon = BitmapFactory.decodeResource(context.getResources(), R.drawable.rotor);
-		Bitmap srcoff = BitmapFactory.decodeResource(context.getResources(), R.drawable.rotor);
-		Bitmap back = BitmapFactory.decodeResource(context.getResources(), R.drawable.back);
+ 
+		Bitmap srcon = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.rotor);
+		Bitmap srcoff = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.rotor);
+		Bitmap back = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.back);
 	    float scaleWidth = ((float) w) / srcon.getWidth();
 	    float scaleHeight = ((float) h) / srcon.getHeight();
 	    Matrix matrix = new Matrix();
@@ -112,9 +116,9 @@ public class RoundKnobButton2 extends RelativeLayout implements OnGestureListene
 		bmpCenter = Bitmap.createBitmap(
 				back, 0, 0, 
 				back.getWidth(),back.getHeight() , matrix , true);
-		// create rotor
-		ivRotor = new ImageView(context);
-		ivCenter = new ImageView(context);
+ 
+		ivRotor = new ImageView(getContext());
+		ivCenter = new ImageView(getContext());
 		
 //		Canvas c = new Canvas(bmpCenter);
 //		c.drawBitmap(bmpRotorOn, 0, 0, null);
@@ -122,17 +126,27 @@ public class RoundKnobButton2 extends RelativeLayout implements OnGestureListene
 //		ivCenter.setImageBitmap(bmpCenter);
 		ivCenter.setImageResource(R.drawable.knob_selector);
 		ivCenter.setClickable(true);
+		ivCenter.setOnClickListener(new OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				if(mCenterClickListener!=null)
+					mCenterClickListener.onCenterClick();
+			}
+		});
+		
 		ivRotor.setImageBitmap(bmpRotorOn);
 		RelativeLayout.LayoutParams lp_ivKnob = new RelativeLayout.LayoutParams(w,h);//LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		lp_ivKnob.addRule(RelativeLayout.CENTER_IN_PARENT);
-		RelativeLayout.LayoutParams lp_ivBack = new RelativeLayout.LayoutParams(100,100);//LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		RelativeLayout.LayoutParams lp_ivBack = new RelativeLayout.LayoutParams(innerW,innerH);//LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		lp_ivBack.addRule(RelativeLayout.CENTER_IN_PARENT);
-		addView(ivCenter, lp_ivBack);
+		
+		drawPosition(0);
+		 
 		addView(ivRotor, lp_ivKnob);		
-		// set initial state
-		SetState(mState);
-		// enable gesture detector
-		gestureDetector = new GestureDetector(getContext(), this);
+ 
+		setState(mState);
+ 
+		gestureDetector = new GestureDetector(getContext(), this);	
 	}
 	
 	/**
@@ -145,6 +159,17 @@ public class RoundKnobButton2 extends RelativeLayout implements OnGestureListene
 		return (float) -Math.toDegrees(Math.atan2(x - 0.5f, y - 0.5f));
 	}
 
+	private float cartesianToPolar2(float x, float y) {
+		float result = 0;
+		x=125-x;
+		y=125-y;
+		float r = (float) Math.sqrt(x*x + y*y);
+		float fg = y/x;
+		float fi = (float) Math.atan2(y, x);
+		float deg = (float) Math.toDegrees(fi);
+		if (deg < 0) deg = 360 + deg;
+		return deg;
+	}
 	
 	@Override public boolean onTouchEvent(MotionEvent event) {
 		if (gestureDetector.onTouchEvent(event)) return true;
@@ -154,20 +179,21 @@ public class RoundKnobButton2 extends RelativeLayout implements OnGestureListene
 	public boolean onDown(MotionEvent event) {
 		float x = event.getX() / ((float) getWidth());
 		float y = event.getY() / ((float) getHeight());
-		mAngleDown = cartesianToPolar(1 - x, 1 - y);// 1- to correct our custom axis direction
+		mAngleDown = cartesianToPolar(1 - x, 1 - y); 
 		return true;
 	}
 	
 	public boolean onSingleTapUp(MotionEvent e) {
 		float x = e.getX() / ((float) getWidth());
 		float y = e.getY() / ((float) getHeight());
-		mAngleUp = cartesianToPolar(1 - x, 1 - y);// 1- to correct our custom axis direction
+		mAngleUp = cartesianToPolar(1 - x, 1 - y); 
 		
 		// if we click up the same place where we clicked down, it's just a button press
 		if (! Float.isNaN(mAngleDown) && ! Float.isNaN(mAngleUp) && Math.abs(mAngleUp-mAngleDown) < 10) {
-			SetState(!mState);
+			setState(!mState);
 			if (m_listener != null) m_listener.onStateChange(mState);
 		}
+		onScroll(null, e, 0, 0);
 		return true;
 	}
 
@@ -222,31 +248,46 @@ public class RoundKnobButton2 extends RelativeLayout implements OnGestureListene
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 		float x = e2.getX() / ((float) getWidth());
 		float y = e2.getY() / ((float) getHeight());
+		 
 		float rotDegrees = cartesianToPolar(1 - x, 1 - y);// 1- to correct our custom axis direction
 		
-		if (! Float.isNaN(rotDegrees)) {
-			// instead of getting 0-> 180, -180 0 , we go for 0 -> 360
+		if (! Float.isNaN(rotDegrees)) { 
 			float posDegrees = rotDegrees;
 			if (rotDegrees < 0) posDegrees = 360 + rotDegrees;
-			
-			// deny full rotation, start start and stop point, and get a linear scale
-			if (posDegrees > 210 || posDegrees < 150) {
-				// rotate our imageview
+  
+			if (posDegrees >= 210 || posDegrees <= 150) {
+ 
 				setRotorPosAngle(posDegrees);
-				// get a linear scale
+ 
 				float scaleDegrees = rotDegrees + 150; // given the current parameters, we go from 0 to 300
-				// get position percent
-				int percent = (int) (scaleDegrees / 3);
+ 
+				int percent = (int) (scaleDegrees / 3); 
+				
 				if (m_listener != null) m_listener.onRotate(percent);
-				return true; //consumed
-			} else
+				return true;  
+			}
+			else if(posDegrees<210&&posDegrees>180){
+				posDegrees=210;
+				setRotorPosAngle(posDegrees);  
+				int percent = 0;
+				if (m_listener != null) m_listener.onRotate(percent);
+				return true;  
+			}
+			else if(posDegrees>150&&posDegrees<180){
+				posDegrees=150;
+				setRotorPosAngle(posDegrees); 
+				int percent = 100; 
+				if (m_listener != null) m_listener.onRotate(percent);
+				return true;  
+			}
+			else
 				return false;
 		} else
-			return false; // not consumed
+			return false;  
 	}
 
 	public void onShowPress(MotionEvent e) {
-		// TODO Auto-generated method stub
+		 
 		
 	}
 	public boolean onFling(MotionEvent arg0, MotionEvent arg1, float arg2, float arg3) { return false; }

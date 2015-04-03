@@ -1,83 +1,52 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rp"
+    xmlns:app="http://schemas.android.com/apk/res/com.kritsin.android.component.knob"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffE4E5E9" >
-    
-    <Switch
-        android:id="@+id/switchUsers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="18dp"
-        android:background="@drawable/switch_selector"
-        android:text=""
-        android:textOff="   "
-        android:textOn="   "
-        android:thumb="@android:color/transparent"
-        android:track="@android:color/transparent" />
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/switchUsers"
-        android:layout_centerHorizontal="true"
-        android:text="100%"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+    tools:context="com.kritsin.android.sample.knob.MainActivity" >
 
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:background="@drawable/lamp_selector" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/lamp_selector" />
+
+    <Switch
+        android:id="@+id/switchUsers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="83dp"
+        android:background="@drawable/switch_selector"
+        android:textOff="   "
+        android:textOn="   "
+        android:thumb="@android:color/transparent"
+        android:track="@android:color/transparent" />
 
     <Button
         android:id="@+id/Button01"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/button1"
+        android:layout_centerHorizontal="true"
         android:background="@drawable/btn_selector" />
 
-    <Switch
-        android:id="@+id/Switch01"
+    <com.kritsin.android.component.knob.RoundKnobButton
+        android:id="@+id/roundKnobButton2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/textView1"
-        android:layout_alignRight="@+id/switchUsers"
-        android:layout_marginBottom="54dp"
-        android:paddingLeft="17dp"
-        android:thumb="@drawable/switch_handle_selector"
-        android:track="@drawable/switch_off_base7_1" />
-
-    <Switch
-        android:id="@+id/Switch02"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button1"
-        android:layout_alignBottom="@+id/button1"
-        android:layout_alignRight="@+id/Switch01"
-        android:layout_marginRight="22dp"
-        android:thumb="@drawable/switch_handle_selector"
-        android:thumbTextPadding="33.0dip"
-        android:text=""
-        android:textOff="   "
-        android:textOn="   "
-        android:track="@drawable/switch_off_base2" />
-
-    <Button
-        android:id="@+id/Button02"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/Switch02"
-        android:layout_marginLeft="13dp"
-        android:layout_marginTop="29dp"
-        android:background="@drawable/knob_selector" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" >
+    </com.kritsin.android.component.knob.RoundKnobButton>
 
 </RelativeLayout>
